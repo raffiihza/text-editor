@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor with Line Numbers</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden; /* Prevent double scrollbars */
+        }
+
+        .editor-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        .line-numbers {
+            width: 40px;
+            padding: 20px 10px 20px 0;
+            text-align: right;
+            background-color: #f0f0f0;
+            color: #aaa;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-user-select: none; /* Prevent selecting line numbers */
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow-y: hidden;
+        }
+
+        .text-editor {
+            flex-grow: 1;
+            padding: 20px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            border: none;
+            outline: none;
+            overflow-y: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            white-space: nowrap; /* Disable text wrapping */
+            overflow-x: auto; /* Add horizontal scroll for long lines */
+        }
+
+        /* Style for the blinking cursor */
+        [contenteditable]:focus {
+            outline: 0px solid transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <div class="line-numbers">
+            <div>1</div>
+        </div>
+        <div class="text-editor" contenteditable="true" spellcheck="false" oninput="updateLineNumbers()" onscroll="syncScroll()">
+            <!-- Start typing here -->
+        </div>
+    </div>
+
+    <script>
+        const editor = document.querySelector('.text-editor');
+        const lineNumbers = document.querySelector('.line-numbers');
+
+        function updateLineNumbers() {
+            const lines = editor.innerText.split('\n');
+            // If the editor is empty, we still want to show one line number
+            const lineCount = lines.length === 1 && lines[0] === '' ? 1 : lines.length;
+            
+            lineNumbers.innerHTML = ''; // Clear existing line numbers
+
+            for (let i = 1; i <= lineCount; i++) {
+                const lineNumber = document.createElement('div');
+                lineNumber.textContent = i;
+                lineNumbers.appendChild(lineNumber);
+            }
+        }
+
+        function syncScroll() {
+            lineNumbers.scrollTop = editor.scrollTop;
+        }
+
+        // Initial update
+        updateLineNumbers();
+
+        // A slight adjustment to the input handler for better user experience
+        editor.addEventListener('input', updateLineNumbers);
+        editor.addEventListener('scroll', syncScroll);
+
+    </script>
+</body>
+</html>
