@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Editor with Line Numbers</title>
+    <title>Text Editor</title>
     <style>
         html, body {
             margin: 0;
@@ -62,7 +62,7 @@
         <div class="line-numbers">
             <div>1</div>
         </div>
-        <div class="text-editor" contenteditable="true" spellcheck="false" oninput="updateLineNumbers()" onscroll="syncScroll()">
+        <div class="text-editor" contenteditable="true" spellcheck="false">
             <!-- Start typing here -->
         </div>
     </div>
@@ -71,7 +71,21 @@
         const editor = document.querySelector('.text-editor');
         const lineNumbers = document.querySelector('.line-numbers');
 
+        // Function to save content to localStorage
+        function saveContent() {
+            localStorage.setItem('editorContent', editor.innerText);
+        }
+
+        // Function to load content from localStorage
+        function loadContent() {
+            const savedContent = localStorage.getItem('editorContent');
+            if (savedContent) {
+                editor.innerText = savedContent;
+            }
+        }
+
         function updateLineNumbers() {
+            // Using innerText to correctly count lines as displayed
             const lines = editor.innerText.split('\n');
             // If the editor is empty, we still want to show one line number
             const lineCount = lines.length === 1 && lines[0] === '' ? 1 : lines.length;
@@ -89,11 +103,22 @@
             lineNumbers.scrollTop = editor.scrollTop;
         }
 
-        // Initial update
-        updateLineNumbers();
+        // --- Event Listeners and Initial Setup ---
 
-        // A slight adjustment to the input handler for better user experience
-        editor.addEventListener('input', updateLineNumbers);
+        // Load existing content from localStorage when the page loads
+        window.addEventListener('load', () => {
+            loadContent();
+            updateLineNumbers();
+            syncScroll(); // Initial scroll sync
+        });
+
+        // Save content and update line numbers on input
+        editor.addEventListener('input', () => {
+            saveContent();
+            updateLineNumbers();
+        });
+
+        // Sync scrolling
         editor.addEventListener('scroll', syncScroll);
 
     </script>
